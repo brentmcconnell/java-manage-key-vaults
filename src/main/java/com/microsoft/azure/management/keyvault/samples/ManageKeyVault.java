@@ -169,6 +169,8 @@ public final class ManageKeyVault {
                     "72f988bf-86f1-41af-91ab-2d7cd011db47",
                     "56c10ef7-2aee-4c98-ad7a-6bf9cecd24d2",
                     AzureEnvironment.AZURE);
+            System.out.println("Selected subscription: " + credentials.defaultSubscriptionId());
+            
             Azure azure = Azure.authenticate(credentials).withSubscription(credentials.defaultSubscriptionId());
 
             // Print selected subscription
