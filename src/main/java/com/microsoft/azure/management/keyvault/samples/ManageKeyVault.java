@@ -7,6 +7,7 @@
 package com.microsoft.azure.management.keyvault.samples;
 
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
+import com.microsoft.azure.AzureEnvironment;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.keyvault.KeyPermissions;
 import com.microsoft.azure.management.keyvault.SecretPermissions;
@@ -40,7 +41,7 @@ public final class ManageKeyVault {
     public static boolean runSample(Azure azure, String clientId) {
         final String vaultName1 = SdkContext.randomResourceName("vault1", 20);
         final String vaultName2 = SdkContext.randomResourceName("vault2", 20);
-        final String rgName = SdkContext.randomResourceName("rgNEMV", 24);
+        final String rgName = SdkContext.randomResourceName("rgKV", 24);
 
         try {
             //============================================================
@@ -49,7 +50,7 @@ public final class ManageKeyVault {
             System.out.println("Creating a key vault...");
 
             Vault vault1 = azure.vaults().define(vaultName1)
-                    .withRegion(Region.US_WEST)
+                    .withRegion(Region.US_EAST)
                     .withNewResourceGroup(rgName)
                     .withEmptyAccessPolicy()
                     .create();
@@ -96,7 +97,7 @@ public final class ManageKeyVault {
             // Create another key vault
 
             Vault vault2 = azure.vaults().define(vaultName2)
-                    .withRegion(Region.US_EAST)
+                    .withRegion(Region.US_EAST2)
                     .withExistingResourceGroup(rgName)
                     .defineAccessPolicy()
                         .forServicePrincipal(clientId)
@@ -154,18 +155,26 @@ public final class ManageKeyVault {
 
             //=============================================================
             // Authenticate
-
+            /* Comment out Experimental AUTH file method
             final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
 
             Azure azure = Azure.configure()
                     .withLogLevel(LogLevel.BASIC)
                     .authenticate(credFile)
                     .withDefaultSubscription();
+            */
+
+            ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(
+                    "afea05bc-6dd7-4d50-a1bd-6039227a6b05" ,
+                    "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                    "56c10ef7-2aee-4c98-ad7a-6bf9cecd24d2",
+                    AzureEnvironment.AZURE);
+            Azure azure = Azure.authenticate(credentials).withSubscription(credentials.defaultSubscriptionId());
 
             // Print selected subscription
             System.out.println("Selected subscription: " + azure.subscriptionId());
 
-            runSample(azure, ApplicationTokenCredentials.fromFile(credFile).clientId());
+            runSample(azure, credentials.clientId());
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();

@@ -3,11 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.microsoft.azure</groupId>
-  <artifactId>key-vault-java-manage-key-vaults</artifactId>
+  <artifactId>java-manage-key-vaults</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>ManageKeyVault.java</name>
   <description></description>
-  <url>https://github.com/Azure/key-vault-java-manage-key-vaults</url>
+  <url>https://github.com/brentmcconnell/java-manage-key-vaults</url>
   <build>
     <plugins>
       <plugin>
