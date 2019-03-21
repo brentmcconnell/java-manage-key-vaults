@@ -29,8 +29,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
+import java.io.FileReader;
 import java.io.File;
+import java.io.InputStreamReader;
 
 /**
  * Azure Key Vault sample for managing key vaults -
@@ -252,23 +253,40 @@ public final class ManageKeyVault {
             // Read in values from JSON file in resource directory.  Must be in the
             // JSON format.  Formatted correctly based on using the following CLI command
             // az ad sp create-for-rbac --sdk-auth
+            File credFile;
+
+            try {
+                credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
+            } catch (Exception e) {
+                throw new Exception("Credentials file cannot be found or read.  Ensure that the system variable AZURE_AUTH_LOCATION is set");
+            }
 
             JSONParser parser = new JSONParser();
             JSONObject data = (JSONObject) parser.parse(
-               Thread.currentThread().getContextClassLoader().getResourceAsStream("sample.azureauth"));
+                    new FileReader(credFile));
 
+            String clientId = (String)data.get("clientId");
+            String domain = (String)data.get("tenantId");
+            String secret = (String)data.get("clientSecret");
+            String subscription = (String)data.get("subscriptionId");
 
+            String azureInfo = String.join(
+                System.getProperty("line.separator"),
+            "Found the following for Azure authentication",
+                "clientId=" + clientId,
+                "tenantId=" + domain,
+                "subscription=" + subscription
+            );
+
+            System.out.println(azureInfo);
 
             ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(
-                    "58cba0fe-54f1-4bcf-9393-d4b81f80068c" ,
-                    "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "335628cd-0fc9-4c27-a594-dbc429fd4fa5",
-                    AzureEnvironment.AZURE);
-            
-            Azure azure = Azure.authenticate(credentials).withSubscription("5fdb292f-4e25-4094-ba84-ae19e7f707d5");
+                   clientId, domain, secret, AzureEnvironment.AZURE);
+
+            Azure azure = Azure.authenticate(credentials).withSubscription(subscription);
 
             // Print selected subscription
-            System.out.println("Selected subscription: " + azure.subscriptionId());
+            System.out.println("Authorized for selected subscription: " + azure.subscriptionId());
 
             runSample(azure, credentials);
         } catch (Exception e) {
