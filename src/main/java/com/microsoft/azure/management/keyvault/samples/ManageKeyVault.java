@@ -54,7 +54,7 @@ public final class ManageKeyVault {
     /**
      * Main function which runs the actual sample.
      * @param azure instance of the azure client
-     * @param clientId client id
+     * @param credentials authentication credentials
      * @return true if sample runs successfully
      */
     public static boolean runSample(Azure azure, ApplicationTokenCredentials credentials) {
@@ -97,12 +97,14 @@ public final class ManageKeyVault {
                         .allowKeyAllPermissions()
                         .allowSecretAllPermissions()
                         .attach()
-                    .defineAccessPolicy()
-                        .forObjectId("cd069970-731a-435d-ac26-8d0f5e6d8862")
-                        .allowKeyAllPermissions()
-                        .allowSecretAllPermissions()
-                        .attach()
                     .apply();
+                    // Use the following the allow another object to have access
+                    //.defineAccessPolicy()
+                    //    .forObjectId("xxxxxxx-xxxx-xxxx-xxx-xxxxxxxxxxxxx")
+                    //    .allowKeyAllPermissions()
+                    //    .allowSecretAllPermissions()
+                    //    .attach()
+                    //.apply();
 
             System.out.println("Updated key vault");
             Utils.print(vault1);
@@ -203,19 +205,19 @@ public final class ManageKeyVault {
 
             //============================================================
             // Delete key vaults
-            //System.out.println("Deleting the key vaults");
-            //azure.vaults().deleteById(vault1.id());
-            //azure.vaults().deleteById(vault2.id());
-            //System.out.println("Deleted the key vaults");
+            System.out.println("Deleting the key vaults");
+            azure.vaults().deleteById(vault1.id());
+            azure.vaults().deleteById(vault2.id());
+            System.out.println("Deleted the key vaults");
 
             return true;
         } catch (Exception e) {
             System.err.println(e.getMessage());
         } finally {
             try {
-                //System.out.println("Deleting Resource Group: " + rgName);
-                //azure.resourceGroups().deleteByName(rgName);
-                //System.out.println("Deleted Resource Group: " + rgName);
+                System.out.println("Deleting Resource Group: " + rgName);
+                azure.resourceGroups().deleteByName(rgName);
+                System.out.println("Deleted Resource Group: " + rgName);
             } catch (NullPointerException npe) {
                 System.out.println("Did not create any resources in Azure. No clean up is necessary");
             } catch (Exception g) {
@@ -243,23 +245,15 @@ public final class ManageKeyVault {
                     .withDefaultSubscription();
             */
 
-            /*ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(
-                    "afea05bc-6dd7-4d50-a1bd-6039227a6b05" ,
-                    "72f988bf-86f1-41af-91ab-2d7cd011db47",
-                    "56c10ef7-2aee-4c98-ad7a-6bf9cecd24d2",
-                    AzureEnvironment.AZURE);
-            */
-
-            // Read in values from JSON file in resource directory.  Must be in the
-            // JSON format.  Formatted correctly based on using the following CLI command
+            // Read in values from JSON file using environment variable AZURE_AUTH_LOCATION.
+            // File must be in correct JSON Format.
+            // Formatted correctly based on using the following CLI command:
             // az ad sp create-for-rbac --sdk-auth
-            File credFile;
-
-            try {
-                credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
-            } catch (Exception e) {
+            String fileLoc = System.getenv("AZURE_AUTH_LOCATION");
+            if (fileLoc == null)
                 throw new Exception("Credentials file cannot be found or read.  Ensure that the system variable AZURE_AUTH_LOCATION is set");
-            }
+
+            final File credFile = new File(fileLoc);
 
             JSONParser parser = new JSONParser();
             JSONObject data = (JSONObject) parser.parse(

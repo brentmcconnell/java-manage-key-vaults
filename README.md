@@ -1,28 +1,43 @@
 ---
 services: Keyvault
 platforms: java
-author: jianghaolu
+author: jianghaolu, brentmcconnell
 ---
 
 ## Getting Started with Keyvault - Manage Key Vault - in Java ##
 
 
   Azure Key Vault sample for managing key vaults -
+   - Create a resource group
    - Create a key vault
    - Authorize an application
+   - Add keys to key vault
+   - Read keys from key vault
+   - Add secrets to key vault
+   - Read secrets from key vault
    - Update a key vault
      - alter configurations
      - change permissions
    - Create another key vault
    - List key vaults
-   - Delete a key vault.
+   - Delete a key vault
+   - Delete a resource group
  
 
 ## Running this Sample ##
 
 To run this sample:
 
-Set the environment variable `AZURE_AUTH_LOCATION` with the full path for an auth file. See [how to create an auth file](https://github.com/Azure/azure-sdk-for-java/blob/master/AUTH.md).
+Ensure you have an active Azure subscription and that the `az` CLI has been installed
+and authenticated.
+
+Set the environment variable `AZURE_AUTH_LOCATION` with the full path for an auth file.
+To create an auth file use the Azure CLI and run the following command:
+
+    `az ad sp create-for-rbac --sdk-auth > my.azureauth`
+
+Once the file has been created.  Create an environment variable called AZURE_AUTH_LOCATION
+that points to the full pathname to the file.
 
     git clone https://github.com/Azure-Samples/key-vault-java-manage-key-vaults.git
 
