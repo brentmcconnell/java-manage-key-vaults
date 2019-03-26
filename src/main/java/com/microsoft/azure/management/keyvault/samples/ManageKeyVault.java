@@ -57,7 +57,7 @@ public final class ManageKeyVault {
      * @param credentials authentication credentials
      * @return true if sample runs successfully
      */
-    public static boolean runSample(Azure azure, ApplicationTokenCredentials credentials) {
+    public static boolean runSample(Azure azure, ApplicationTokenCredentials credentials, String[] args) {
         final String vaultName1 = SdkContext.randomResourceName("vault1", 20);
         final String vaultName2 = SdkContext.randomResourceName("vault2", 20);
         final String rgName = SdkContext.randomResourceName("rgKV_", 8);
@@ -69,11 +69,19 @@ public final class ManageKeyVault {
         final String secretValue2 = RandomStringUtils.randomAlphanumeric(16);
         final String secretName3 = "secret-" + RandomStringUtils.randomAlphanumeric(8);
         final String secretValue3 = RandomStringUtils.randomAlphanumeric(16);
+        boolean keep = false;
 
 
         try {
             //============================================================
             // Create a key vault with empty access policy
+
+            for (String strTemp : args){
+                System.out.println(strTemp);
+                if (strTemp.matches("(.*)keep"))
+                    keep = true;
+                    System.out.println("KeyVaults will be kept after run.");
+            }
 
             System.out.println("Creating a key vault with no Access Policy...");
 
@@ -170,7 +178,7 @@ public final class ManageKeyVault {
             // Different way to create the vault with detailed access
             // policy configured during create
             Vault vault2 = azure.vaults().define(vaultName2)
-                    .withRegion(Region.US_EAST2)
+                    .withRegion(Region.GOV_US_VIRGINIA)
                     .withExistingResourceGroup(rgName)
                     .defineAccessPolicy()
                         .forServicePrincipal(credentials.clientId())
@@ -195,28 +203,27 @@ public final class ManageKeyVault {
             }
 
             //============================================================
-            // Delete key vaults
-            System.out.println("Deleting the key vaults");
-            azure.vaults().deleteById(vault1.id());
-            azure.vaults().deleteById(vault2.id());
-            System.out.println("Deleted the key vaults");
+            // Delete key vaults and resource group if required
+            if (!keep) {
+                System.out.println("Deleting the key vaults");
+                azure.vaults().deleteById(vault1.id());
+                azure.vaults().deleteById(vault2.id());
+                System.out.println("Deleted the key vaults");
+                cleanupResourceGroup(azure, rgName);
+            }
 
             return true;
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-        } finally {
-            try {
-                System.out.println("Deleting Resource Group: " + rgName);
-                azure.resourceGroups().deleteByName(rgName);
-                System.out.println("Deleted Resource Group: " + rgName);
-            } catch (NullPointerException npe) {
-                System.out.println("Did not create any resources in Azure. No clean up is necessary");
-            } catch (Exception g) {
-                g.printStackTrace();
-            }
+            cleanupResourceGroup(azure, rgName);
         }
 
         return false;
+    }
+
+    private static void cleanupResourceGroup(Azure azure, String rgName) {
+        System.out.println("Deleting Resource Group: " + rgName);
+        azure.resourceGroups().deleteByName(rgName);
+        System.out.println("Deleted Resource Group: " + rgName);
     }
     /**
      * Main entry point.
@@ -273,7 +280,7 @@ public final class ManageKeyVault {
             // Print selected subscription
             System.out.println("Authorized for selected subscription: " + azure.subscriptionId());
 
-            runSample(azure, credentials);
+            runSample(azure, credentials, args);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
