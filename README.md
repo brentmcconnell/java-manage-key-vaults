@@ -28,6 +28,12 @@ author: jianghaolu, brentmcconnell
 
 To run this sample:
 
+There are 2 branches in this repo:
+1.  master = Azure Commerical
+2.  gov = Azure Government
+
+Checkout the appropriate branch before completing the rest of these instructions.
+
 Ensure you have an active Azure subscription and that the `az` CLI has been installed
 and authenticated.
 
