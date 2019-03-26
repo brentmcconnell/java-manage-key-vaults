@@ -51,6 +51,19 @@ that points to the full pathname to the file.
 
     mvn clean compile exec:java
 
+By default this program will run all of the above samples and then delete the keyvault and resource group.  If you would
+like to keep the keyvaults and resource group you can run the following:
+
+    mvn clean compile exec:java -Dexec.args="--keep"
+
+This will perform the same samples as above but leave the keyvault and resource group intact.  If you would like to
+browse the keyvaults via the portal you should give your account the correct Access Policies to view the contents of the
+keyvaults. From the CLI you can see the secrets in the vault using the following:
+
+    az keyvault list -> To identify the keyvaults created
+    az keyvault key list --vault-name XXXXXX -o table -> where -n is the keyvault name
+    az keyvault secret list --vault-name XXXXXXX --query '[].{secretID:id}' -o table -> where --vault-name is the keyvault name
+
 ## More information ##
 
 [http://azure.com/java](http://azure.com/java)
