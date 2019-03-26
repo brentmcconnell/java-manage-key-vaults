@@ -187,7 +187,7 @@ public final class ManageKeyVault {
             // Different way to create the vault with detailed access
             // policy configured during create
             Vault vault2 = azure.vaults().define(vaultName2)
-                    .withRegion(Region.GOV_US_VIRGINIA)
+                    .withRegion(Region.US_EAST)
                     .withExistingResourceGroup(rgName)
                     .defineAccessPolicy()
                         .forServicePrincipal(credentials.clientId())
