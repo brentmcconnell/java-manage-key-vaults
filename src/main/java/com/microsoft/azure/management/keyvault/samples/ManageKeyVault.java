@@ -78,12 +78,11 @@ public final class ManageKeyVault {
             System.out.println("Creating a key vault with no Access Policy...");
 
             Vault vault1 = azure.vaults().define(vaultName1)
-                    .withRegion(Region.US_EAST)
+                    .withRegion(Region.GOV_US_DOD_EAST)
                     .withNewResourceGroup(rgName)
                     .withEmptyAccessPolicy()
                     .create();
 
-            System.out.println("Created key vault");
             Utils.print(vault1);
 
             //============================================================
@@ -98,15 +97,7 @@ public final class ManageKeyVault {
                         .allowSecretAllPermissions()
                         .attach()
                     .apply();
-                    // Use the following the allow another object to have access
-                    //.defineAccessPolicy()
-                    //    .forObjectId("xxxxxxx-xxxx-xxxx-xxx-xxxxxxxxxxxxx")
-                    //    .allowKeyAllPermissions()
-                    //    .allowSecretAllPermissions()
-                    //    .attach()
-                    //.apply();
 
-            System.out.println("Updated key vault");
             Utils.print(vault1);
 
             //===========================================================
