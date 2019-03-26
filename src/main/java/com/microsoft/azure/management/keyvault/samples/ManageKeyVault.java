@@ -266,7 +266,7 @@ public final class ManageKeyVault {
             System.out.println(azureInfo);
 
             ApplicationTokenCredentials credentials = new ApplicationTokenCredentials(
-                   clientId, domain, secret, AzureEnvironment.AZURE);
+                   clientId, domain, secret, AzureEnvironment.AZURE_US_GOVERNMENT);
 
             Azure azure = Azure.authenticate(credentials).withSubscription(subscription);
 
